@@ -15,8 +15,9 @@ def home():
 # ====== API endpoint ======
 @app.post("/chat")
 def chat(query: Query):
-    answer = chatbot(query.question)
+    answer, docs = chatbot(query.question)
     return {
         "question": query.question,
-        "answer": answer
+        "answer": answer,
+        "docs": docs
     }
