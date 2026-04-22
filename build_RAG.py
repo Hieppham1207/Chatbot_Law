@@ -76,7 +76,7 @@ def retrieve(query, k=3):
 
     return results
 import google.generativeai as genai
-genai.configure(api_key= "AIzaSyA4EckDDG_GjXDcAIGQc-pZ_m7IfpyMqO4")
+genai.configure(api_key= "your_APIKey")
 
 def call_llm(query, context):
     prompt = f"""
