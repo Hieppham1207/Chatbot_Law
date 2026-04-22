@@ -1,5 +1,7 @@
 import streamlit as st
-from build_RAG import chatbot
+import requests
+
+API_URL = "http://127.0.0.1:8000/chat"
 
 st.set_page_config(
     page_title="Chatbot Luật Lao Động",
@@ -35,7 +37,7 @@ textarea {
 # sidebar
 with st.sidebar:
     st.title("⚙️ Settings")
-    st.write("Model: RAG + LLM")
+    st.write("Model: RAG + LLM (via FastAPI)")
 
 # header
 st.markdown("""
@@ -63,13 +65,27 @@ if query:
         st.write(query)
 
     with st.spinner("🤖 Đang suy nghĩ..."):
-        answer, docs = chatbot(query)
+        try:
+            response = requests.post(
+                API_URL,
+                json={"question": query},
+                timeout=30
+            )
+
+            data = response.json()
+            answer = data.get("answer", "Không có câu trả lời")
+            docs = data.get("docs", [])
+
+        except Exception as e:
+            answer = f"Lỗi kết nối API: {e}"
+            docs = []
 
     with st.chat_message("assistant"):
         st.write(answer)
 
-        st.markdown("**📚 Nguồn:**")
-        for doc in docs:
-            st.write(f"- {doc['title']}")
+        if docs:
+            st.markdown("**📚 Nguồn:**")
+            for doc in docs:
+                st.write(f"- {doc.get('title', '')}")
 
     st.session_state.messages.append({"role": "assistant", "content": answer})
